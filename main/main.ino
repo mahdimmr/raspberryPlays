@@ -7,8 +7,8 @@ const int ECHO_PIN = 15;
 const int blue = 12;
 const int green = 14;
 const int red = 16;
-const char* ssid = "\\  -_-  /";
-const char* password = "M76m1414";
+const char* ssid = "ssid";
+const char* password = "pass";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
