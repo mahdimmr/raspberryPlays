@@ -8,7 +8,7 @@ const int green = 14;
 const int red = 16;
 
 const char* ssid = "\\  -_-  /";
-const char* password = "M76m1414";
+const char* password = "hello";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
