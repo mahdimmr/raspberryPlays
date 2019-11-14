@@ -1,43 +1,17 @@
 #include "ESP8266WiFi.h"
 #include <PubSubClient.h>
 
-
 const int TRIG_PIN = 13;
 const int ECHO_PIN = 15;
 const int blue = 12;
 const int green = 14;
 const int red = 16;
-const char* ssid = "ssid";
-const char* password = "pass";
+
+const char* ssid = "\\  -_-  /";
+const char* password = "M76m1414";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
-
-void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i=0;i<length;i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
-}
-
-void reconnect() {
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("clinetid")) {
-      Serial.println("connected");
-      client.publish("hello","hello from esp");
-      client.subscribe("hello");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println("try again in 5 seconds");
-      delay(5000);
-    }
-  }
-}
 
 void distanceDo(long distanceCm, long distanceIn) {
   if (distanceCm <= 0){
@@ -66,11 +40,11 @@ void distanceDo(long distanceCm, long distanceIn) {
   };
   
   char *str = (char*)malloc(13 * sizeof(char));;
-  sprintf(str, "%ld cm", distanceCm);
-  client.publish("helloitsme", str);
+  sprintf(str, "%ld", distanceCm);
+  client.publish("/distance", str);
   char *str2 = (char*)malloc(13 * sizeof(char));;
-  sprintf(str2, "%ld inch", distanceIn);
-  client.publish("helloitsme", str2);
+//  sprintf(str2, "%ld inch", distanceIn);
+//  client.publish("/distance", str2);
 }
 
 
@@ -81,9 +55,8 @@ void setup() {
   pinMode(blue,OUTPUT);
   pinMode(green,OUTPUT);
   pinMode(ECHO_PIN,INPUT);
-  client.setServer("192.168.1.41", 1883);
-  client.setCallback(callback);  
-  
+  client.setServer("192.168.1.36", 1883);
+  client.setCallback(callback);
   Serial.print(WiFi.localIP());
   Serial.println("");
   Serial.println("WiFi connection Successful");
@@ -91,11 +64,18 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) 
   {
+     digitalWrite(LED_BUILTIN, HIGH); 
+     delay(500);                       
+     digitalWrite(LED_BUILTIN, LOW);    
      delay(500);
      Serial.print("*");
   }
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
 }
- 
+
 void loop()
 {
   long duration, distanceCm, distanceIn;
@@ -108,10 +88,4 @@ void loop()
   distanceCm = duration / 29.1 / 2 ;
   distanceIn = duration / 74 / 2;
   distanceDo(distanceCm, distanceIn);
-  
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
-  
 }
