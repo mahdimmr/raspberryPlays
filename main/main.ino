@@ -8,7 +8,7 @@ const int green = 14;
 const int red = 16;
 
 const char* ssid = "\\  -_-  /";
-const char* password = "hello";
+const char* password = "*******";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -41,8 +41,11 @@ void distanceDo(long distanceCm, long distanceIn) {
   
   char *str = (char*)malloc(13 * sizeof(char));;
   sprintf(str, "%ld", distanceCm);
+  digitalWrite(LED_BUILTIN, HIGH);
   client.publish("/distance", str);
-  char *str2 = (char*)malloc(13 * sizeof(char));;
+  delayMicroseconds(50);
+  digitalWrite(LED_BUILTIN, LOW);
+//  char *str2 = (char*)malloc(13 * sizeof(char));;
 //  sprintf(str2, "%ld inch", distanceIn);
 //  client.publish("/distance", str2);
 }
@@ -50,6 +53,7 @@ void distanceDo(long distanceCm, long distanceIn) {
 
 void setup() {
   Serial.begin(9600);
+  pinMode(LED_BUILTIN, HIGH);
   pinMode(TRIG_PIN,OUTPUT);
   pinMode(red,OUTPUT);
   pinMode(blue,OUTPUT);
@@ -64,9 +68,9 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) 
   {
-     digitalWrite(LED_BUILTIN, HIGH); 
-     delay(500);                       
-     digitalWrite(LED_BUILTIN, LOW);    
+     digitalWrite(LED_BUILTIN, HIGH);
+     delay(500);
+     digitalWrite(LED_BUILTIN, LOW);
      delay(500);
      Serial.print("*");
   }
@@ -84,6 +88,8 @@ void loop()
   digitalWrite(TRIG_PIN, HIGH);
   delayMicroseconds(2);
   digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  
   duration = pulseIn(ECHO_PIN, HIGH);
   distanceCm = duration / 29.1 / 2 ;
   distanceIn = duration / 74 / 2;
